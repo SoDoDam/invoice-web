@@ -31,8 +31,13 @@ export async function verifyInvoiceAccessAction(
 
   const { invoiceNumber, accessCode } = parsed.data
 
-  // Notion에서 인보이스 조회
-  const invoice = await getInvoiceByNumber(invoiceNumber)
+  // Notion에서 인보이스 조회 (API 오류는 클라이언트에 노출 금지)
+  let invoice = null
+  try {
+    invoice = await getInvoiceByNumber(invoiceNumber)
+  } catch {
+    return { success: false, error: "인보이스를 찾을 수 없거나 접근 코드가 올바르지 않습니다." }
+  }
 
   // 인보이스 미존재 또는 접근 코드 불일치 시 동일 오류 반환 (정보 은닉)
   if (!invoice || !invoice.accessCode) {

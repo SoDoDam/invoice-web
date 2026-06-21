@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { Copy, Check } from "lucide-react"
+import { toast } from "sonner"
 import {
   Dialog,
   DialogContent,
@@ -23,9 +24,14 @@ function CopyButton({ value }: { value: string }) {
   const [copied, setCopied] = useState(false)
 
   const handleCopy = async () => {
-    await navigator.clipboard.writeText(value)
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2000)
+    try {
+      await navigator.clipboard.writeText(value)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    } catch {
+      // 클립보드 권한 거부 등 실패 시 사용자에게 안내
+      toast.error("복사에 실패했습니다. 직접 선택하여 복사해 주세요.")
+    }
   }
 
   return (

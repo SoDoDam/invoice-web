@@ -18,7 +18,7 @@ async function notionFetch<T>(
     method,
     headers: {
       Authorization: `Bearer ${apiKey}`,
-      "Notion-Version": "2024-08-01",
+      "Notion-Version": "2026-03-11",
       "Content-Type": "application/json",
     },
     body: body ? JSON.stringify(body) : undefined,
@@ -53,8 +53,9 @@ function pageToInvoice(page: any): Invoice {
   const getNumber = (prop: any) =>
     prop?.number ?? 0
 
+  // 2026-03-11 API: Status는 status 타입, Currency는 select 타입
   const getSelect = (prop: any, defaultValue: string = "draft") =>
-    prop?.select?.name ?? defaultValue
+    prop?.status?.name ?? prop?.select?.name ?? defaultValue
 
   const getDate = (prop: any) =>
     prop?.date?.start ?? ""
@@ -84,7 +85,7 @@ export async function getInvoices(filter?: {
 
   while (true) {
     const response = await notionFetch<any>(
-      `/databases/${databaseId}/query`,
+      `/data_sources/${databaseId}/query`,
       "POST",
       {
         page_size: 100,
@@ -98,7 +99,7 @@ export async function getInvoices(filter?: {
         filter: filter?.status
           ? {
               property: "Status",
-              select: {
+              status: {
                 equals: filter.status,
               },
             }
@@ -119,7 +120,7 @@ export async function getInvoices(filter?: {
 export async function getInvoiceByNumber(invoiceNumber: string): Promise<Invoice | null> {
   const databaseId = getDatabaseId()
   const response = await notionFetch<any>(
-    `/databases/${databaseId}/query`,
+    `/data_sources/${databaseId}/query`,
     "POST",
     {
       page_size: 1,
