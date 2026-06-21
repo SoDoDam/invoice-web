@@ -2,7 +2,13 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-@AGENTS.md
+**invoice-web**은 관리자가 Notion에서 관리하는 인보이스를 클라이언트가 웹 브라우저에서 직접 조회하고 PDF로 다운로드할 수 있는 인보이스 조회 시스템입니다.
+
+## Project Context
+
+- PRD 문서: @docs/PRD.md
+- 개발 로드맵: @docs/ROADMAP.md
+- 에이전트 가이드: @AGENTS.md
 
 ## 명령어
 
@@ -20,6 +26,20 @@ npm run lint     # ESLint 검사
 - **next-themes** — 다크/라이트 모드, `ThemeProvider`로 래핑
 - **react-hook-form** + **zod v4** — 폼 유효성 검사
 - **sonner** — 토스트 알림
+- **@notionhq/client** — Notion API 연동
+
+## 라우트 구조
+
+```
+공개 접근 (비로그인)
+├── / → /invoice 리다이렉트
+├── /invoice            — 인보이스 번호 + 접근 코드 입력 폼
+└── /invoice/[num]      — 인보이스 상세 (세션 기반 보안)
+
+관리자 (인증 필수)
+├── /admin/login        — 관리자 비밀번호 로그인
+└── /dashboard          — 인보이스 목록 + 공유 링크 생성 (middleware 보호)
+```
 
 ## 아키텍처
 
@@ -30,15 +50,29 @@ npm run lint     # ESLint 검사
 ### 컴포넌트 계층
 
 - `components/ui/` — shadcn/ui 원본 컴포넌트 (직접 수정 가능)
-- `components/layout/` — Header, Footer, MobileNav, ThemeToggle, ThemeProvider
-- `components/landing/` — 랜딩 페이지 섹션 (HeroSection, FeaturesSection, CtaSection)
-- `components/dashboard/` — 대시보드 전용 컴포넌트 (StatsCard, OverviewTabs, RecentActivity)
+- `components/layout/` — Header, Footer, ThemeToggle, ThemeProvider, AdminLoginForm
+- `components/invoice/` — InvoiceLookupForm, InvoiceTemplate, PdfDownloadButton
+- `components/dashboard/` — StatsCard, InvoiceList, ShareModal
 
 ### 데이터 및 타입
 
-- `lib/types.ts` — 프로젝트 공통 타입 정의
-- `lib/constants.ts` — 네비게이션, 피처 목록, 목업 데이터 등 정적 상수 (데이터 변경 시 여기를 수정)
+- `lib/types.ts` — 프로젝트 공통 타입 정의 (Invoice, InvoiceStatus, Currency 등)
+- `lib/constants.ts` — SITE_NAME, INVOICE_STATUS_CONFIG, CURRENCY_CONFIG 등
 - `lib/utils.ts` — `cn()` 유틸리티 (clsx + tailwind-merge)
+- `lib/notion.ts` — Notion API 연동 (서버 전용)
+- `lib/auth.ts` — 관리자 토큰 및 인보이스 세션 유틸 (서버 전용)
+
+### Server Actions
+
+- `app/actions/admin.ts` — 관리자 로그인/로그아웃
+- `app/actions/invoice-client.ts` — 인보이스 접근 코드 검증
+- `app/actions/invoice.ts` — 인보이스 CRUD (대시보드용)
+
+### 보안
+
+- `/dashboard` 접근은 `middleware.ts`에서 `admin_token` httpOnly 쿠키 검증
+- 인보이스 상세 페이지는 Server Component에서 세션 쿠키 재검증
+- 접근 코드는 POST 바디로만 전송 (URL 노출 방지)
 
 ### 경로 별칭
 
@@ -47,3 +81,10 @@ npm run lint     # ESLint 검사
 ## shadcn/ui 주의사항
 
 이 프로젝트는 `radix-ui` 패키지(v1+, 단일 패키지)를 사용하며, 기존의 개별 `@radix-ui/*` 패키지와 다름. 컴포넌트 임포트 경로가 다를 수 있으므로 기존 `components/ui/` 파일을 참고할 것.
+
+## 환경 변수
+
+`.env.local.example` 참고. 필수 변수:
+- `NOTION_API_KEY`, `NOTION_DATABASE_ID` — Notion 연동
+- `ADMIN_PASSWORD`, `JWT_SECRET` — 관리자 인증
+- `NEXT_PUBLIC_COMPANY_*` — 인보이스 헤더 회사 정보
