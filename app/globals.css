@@ -128,3 +128,24 @@
     @apply font-sans;
   }
 }
+
+/* 인보이스 PDF 인쇄 스타일 */
+@media print {
+  /* 헤더, 푸터, 버튼 숨김 */
+  header,
+  footer,
+  .print\:hidden {
+    display: none !important;
+  }
+
+  /* 배경색/이미지 인쇄 허용 */
+  body {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* 인보이스 영역 전체 너비 */
+  .invoice-wrapper {
+    max-width: 100%;
+  }
+}

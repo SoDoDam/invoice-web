@@ -1,13 +1,6 @@
-import { HeroSection } from "@/components/landing/hero-section"
-import { FeaturesSection } from "@/components/landing/features-section"
-import { CtaSection } from "@/components/landing/cta-section"
+import { redirect } from "next/navigation"
 
+// 홈("/")은 인보이스 조회 페이지로 리다이렉트
 export default function HomePage() {
-  return (
-    <div className="flex flex-col">
-      <HeroSection />
-      <FeaturesSection />
-      <CtaSection />
-    </div>
-  )
+  redirect("/invoice")
 }

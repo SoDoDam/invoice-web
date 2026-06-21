@@ -1,26 +1,16 @@
-import {
-  Users,
-  DollarSign,
-  ShoppingCart,
-  TrendingUp,
-  TrendingDown,
-  type LucideIcon,
-} from "lucide-react"
+import { FileText, DollarSign, Clock, AlertCircle, type LucideIcon } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { cn } from "@/lib/utils"
 import type { StatCard } from "@/lib/types"
 
 const ICON_MAP: Record<string, LucideIcon> = {
-  Users,
+  FileText,
   DollarSign,
-  ShoppingCart,
-  TrendingUp,
+  Clock,
+  AlertCircle,
 }
 
-export function StatsCard({ title, value, trend, icon }: StatCard) {
+export function StatsCard({ title, value, icon }: StatCard) {
   const Icon = ICON_MAP[icon]
-  const isPositive = trend >= 0
 
   return (
     <Card>
@@ -36,24 +26,6 @@ export function StatsCard({ title, value, trend, icon }: StatCard) {
       </CardHeader>
       <CardContent>
         <p className="text-2xl font-bold">{value}</p>
-        <div className="mt-1 flex items-center gap-1">
-          {isPositive ? (
-            <TrendingUp className="size-3 text-emerald-500" />
-          ) : (
-            <TrendingDown className="size-3 text-destructive" />
-          )}
-          <Badge
-            variant={isPositive ? "default" : "destructive"}
-            className={cn(
-              "px-1.5 py-0 text-xs",
-              isPositive && "bg-emerald-500/10 text-emerald-600 hover:bg-emerald-500/20 dark:text-emerald-400"
-            )}
-          >
-            {isPositive ? "+" : ""}
-            {trend}%
-          </Badge>
-          <span className="text-xs text-muted-foreground">전월 대비</span>
-        </div>
       </CardContent>
     </Card>
   )

@@ -9,10 +9,10 @@ export default function NotFound() {
         페이지를 찾을 수 없습니다
       </h1>
       <p className="mt-2 text-muted-foreground">
-        요청하신 페이지가 존재하지 않거나 이동되었습니다.
+        요청하신 인보이스가 존재하지 않거나 만료되었습니다.
       </p>
       <Button asChild className="mt-8" size="lg">
-        <Link href="/">홈으로 돌아가기</Link>
+        <Link href="/invoice">인보이스 조회로 돌아가기</Link>
       </Button>
     </div>
   )
