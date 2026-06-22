@@ -18,8 +18,11 @@ function verifyAdminToken(token: string): boolean {
 export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
 
-  // /dashboard 경로 보호
-  if (pathname.startsWith("/dashboard")) {
+  // /dashboard 및 /admin/invoices 경로 보호 (/admin/login은 제외)
+  if (
+    pathname.startsWith("/dashboard") ||
+    pathname.startsWith("/admin/invoices")
+  ) {
     const token = request.cookies.get(ADMIN_TOKEN_COOKIE)?.value
 
     if (!token || !verifyAdminToken(token)) {
@@ -33,5 +36,5 @@ export function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/dashboard/:path*"],
+  matcher: ["/dashboard/:path*", "/admin/invoices/:path*"],
 }
