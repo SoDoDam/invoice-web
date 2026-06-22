@@ -1,6 +1,6 @@
 ---
 description: 'ROADMAP.md에서 완료된 작업을 체크하고 진행 상황을 업데이트합니다'
-allowed-tools: ['Read(docs/ROADMAP.md:*)', 'Edit(docs/ROADMAP.md:*)']
+allowed-tools: ['Read(docs/ROADMAP_v1.md:*)', 'Edit(docs/ROADMAP_v1.md:*)']
 ---
 
 # Claude 명령어: Update Roadmap
